@@ -244,7 +244,7 @@ export default {
           }
           var greening =  this.events.filter(item => item.disease=='Citrus Scab')
          if(greening.length>0){
-               this.chartData1.datasets[5].data[2]=greening[0].quantity
+               this.chartData1.datasets[0].data[5]=greening[0].quantity
           }
           var greening =  this.events.filter(item => item.disease=='Alternaria Brown Spot')
          if(greening.length>0){
