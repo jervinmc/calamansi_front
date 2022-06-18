@@ -18,68 +18,16 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
-    <v-row>
-      <v-col align="start" class="pa-10 text-h5" cols="auto">
-        <b>Reports Management</b>
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-col align-self="center" align="end" class="pr-10" v-if="account_type!='Staff'">
-  
-      </v-col>
-    </v-row>
-    <v-data-table
-      class="pa-5"
-      :headers="headers"
-      :items="events"
-      :loading="isLoading"
-    >
-     <template v-slot:[`item.status`]="{ item }">
-        <div>
-          <v-chip align="center" :style="getColorStatus(item.status)"
-            ><span>{{ item.status }} </span></v-chip
-          >
-        </div>
-      </template>
-     <template #[`item.price`]="{ item }">
-          <div>
-            {{formatPrice(item.price)}}
-          </div>
-      </template>
-      <template v-slot:loading>
-        <v-skeleton-loader
-          v-for="n in 5"
-          :key="n"
-          type="list-item-avatar-two-line"
-          class="my-2"
-        ></v-skeleton-loader>
-      </template>
-
-      <template #[`item.opt`]="{ item }">
-        <v-menu offset-y z-index="1">
-          <template v-slot:activator="{ attrs, on }">
-            <v-btn icon v-bind="attrs" v-on="on">
-              <v-icon>mdi-dots-horizontal</v-icon>
-            </v-btn>
-          </template>
-          <v-list dense>
-            <v-list-item @click.stop="editItem(item)">
-              <v-list-item-content>
-                <v-list-item-title>Edit</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item @click.stop="deleteItem(item)">
-              <v-list-item-content>
-                <v-list-item-title>Delete</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </template>
-    </v-data-table>
     <div>
-         <div class="pie_chart"  style="height:280px" align="center" v-if="chart_data1" >
+         <!-- <div class="pie_chart"  style="height:280px" align="center" v-if="chart_data1" >
                     <pie-chart :data="chartData1" :options="chartOptions"></pie-chart>
- </div>
+ </div> -->
+    <div class="pl-5 text-h5">
+     <b> Monthly Report </b>
+    </div>
+  <div v-if="isGraph">
+     <VueApexCharts width="1000" type="bar" :options="chartOptions" :series="series"></VueApexCharts>
+   </div>
     </div>
   </v-card>
 </template>
@@ -87,14 +35,40 @@
 <script>
 
 import PieChart from "./PieChart.js";
-export default {
-    components:{PieChart},
+import { Bar } from 'vue-chartjs'
+import VueApexCharts from 'vue-apexcharts'
+
+export default { 
+    components:{PieChart,Bar,VueApexCharts},
   created() {
     this.loadData();
   },
   data() {
     return {
-        chartData1: {
+      chartData5: {
+        labels: [ 'January', 'February', 'March'],
+        datasets: [
+          {
+            label: 'Data One',
+            backgroundColor: '#f87979',
+            data: [40, 20, 12]
+          }
+        ]
+      },
+       chartData2: {
+        labels: [ 'January', 'February', 'March'],
+        datasets: [
+          {
+            label: 'Data One',
+            backgroundColor: '#f87979',
+            data: [40, 20, 12]
+          }
+        ]
+      },
+      chartOptions2: {
+        responsive: true
+      },
+    chartData1: {
         responsive:false,
         hoverBackgroundColor: "red",
         hoverBorderWidth: 10,
@@ -106,7 +80,7 @@ export default {
             data: [0,0,0,0,0,0,0]
           }
         ]
-      },
+      },chart_data1:false,
         chartData: {
         responsive:false,
         hoverBackgroundColor: "red",
@@ -121,16 +95,29 @@ export default {
           }
         ]
       },
-      chartOptions: {
+      chartOptions_pie: {
         chart: {
           title: 'Company Performance',
           subtitle: 'Sales, Expenses, and Profit: 2014-2017',
         },
       },
+       chartOptions: {
+          chart: {
+            id: 'vuechart-example'
+          },
+          xaxis: {
+            categories: ["January", "February", "March", "April", "May", "June", "July", "August","September","October","November","December"]
+          }
+        },
+        series: [{
+          name: 'series-1',
+          data: [30, 40, 35, 50, 49, 60, 70, 91,19,19,29,10]
+        }],
       buttonLoad:false,
       account_type:'',
       deleteConfirmation:false,
       selectedItem:[],
+      isGraph:false,
         events:[],
       selectedItem:{},
       isLoading: false,
@@ -215,9 +202,23 @@ export default {
       this.isLoading = true;
       const res = await this.$axios
         .get(`/logs`, {
-    
+
         })
         .then((res) => {
+          this.series[0]['data'][0] = res.data.filter(data=>new Date(data.date).getMonth()==0).length
+         this.series[0]['data'][1] = res.data.filter(data=>new Date(data.date).getMonth()==1).length
+         this.series[0]['data'][2] = res.data.filter(data=>new Date(data.date).getMonth()==2).length
+         this.series[0]['data'][3] = res.data.filter(data=>new Date(data.date).getMonth()==3).length
+         this.series[0]['data'][4] = res.data.filter(data=>new Date(data.date).getMonth()==4).length
+         this.series[0]['data'][5] = res.data.filter(data=>new Date(data.date).getMonth()==5).length
+         this.series[0]['data'][6] = res.data.filter(data=>new Date(data.date).getMonth()==6).length
+         this.series[0]['data'][7] = res.data.filter(data=>new Date(data.date).getMonth()==7).length
+         this.series[0]['data'][8] = res.data.filter(data=>new Date(data.date).getMonth()==8).length
+         this.series[0]['data'][9] = res.data.filter(data=>new Date(data.date).getMonth()==9).length
+         this.series[0]['data'][10] = res.data.filter(data=>new Date(data.date).getMonth()==10).length
+         this.series[0]['data'][11] = res.data.filter(data=>new Date(data.date).getMonth()==11).length
+         this.isGraph = true
+         console.log(this.series)
           console.log(res.data);
           this.events = res.data;
            var greasy =  this.events.filter(item => item.disease=='Greasy Spot')
