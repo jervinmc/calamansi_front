@@ -22,11 +22,18 @@
          <!-- <div class="pie_chart"  style="height:280px" align="center" v-if="chart_data1" >
                     <pie-chart :data="chartData1" :options="chartOptions"></pie-chart>
  </div> -->
-    <div class="pl-5 text-h5">
+<v-row class="pa-10">
+  <v-col>
+        <div class="pl-5 text-h5">
      <b> Monthly Report </b>
     </div>
+  </v-col>
+  <v-col>
+    <v-select @change="getData" v-model="monthCategory" outlined :items="['January','February','March','April','May','June','July','August','September','October','November','December']"></v-select>
+  </v-col>
+</v-row>
   <div v-if="isGraph">
-     <VueApexCharts width="1000" type="bar" :options="chartOptions" :series="series"></VueApexCharts>
+     <VueApexCharts ref="realtimeChart" width="1000" type="bar" :options="chartOptions" :series="series"></VueApexCharts>
    </div>
     </div>
   </v-card>
@@ -106,12 +113,12 @@ export default {
             id: 'vuechart-example'
           },
           xaxis: {
-            categories: ["January", "February", "March", "April", "May", "June", "July", "August","September","October","November","December"]
+            categories: ["Sooty Mold", "Phytphthora", "Greening", "Greasy Spot", "Cranker", "Citrus Scab", "Alternaria Brown Spot"]
           }
         },
         series: [{
           name: 'series-1',
-          data: [30, 40, 35, 50, 49, 60, 70, 91,19,19,29,10]
+          data: [30, 40, 35, 50, 49, 60, 70]
         }],
       buttonLoad:false,
       account_type:'',
@@ -122,6 +129,7 @@ export default {
       selectedItem:{},
       isLoading: false,
       users: [],
+      monthCategory:'',
       dialogAdd:false,
       isAdd:true,
       headers: [
@@ -133,6 +141,57 @@ export default {
     };
   },
   methods: {
+    getData(){
+      this.isGraph=false
+      var month = 0;
+      if(this.monthCategory=='January'){
+        month = 0
+      }
+      else if(this.monthCategory=='February'){
+           month = 1
+      }
+      else if(this.monthCategory=='March'){
+         month = 2
+      }
+      else if(this.monthCategory=='April'){
+         month = 3
+      }
+      else if(this.monthCategory=='May'){
+         month = 4
+      }
+      else if(this.monthCategory=='June'){
+         month = 5
+      }
+      else if(this.monthCategory=='July'){
+         month = 6
+      }
+      else if(this.monthCategory=='August'){
+         month = 7
+      }
+      else if(this.monthCategory=='September'){
+         month = 8
+      }
+      else if(this.monthCategory=='October'){
+         month = 9
+      }
+      else if(this.monthCategory=='November'){
+         month = 10
+      }
+      else if(this.monthCategory=='December'){
+         month = 11
+      }
+        this.series[0]['data'][0] = this.events.filter(data=>new Date(data.date).getMonth()==month && data.disease=='Sooty Mold').length
+         this.series[0]['data'][1] = this.events.filter(data=>new Date(data.date).getMonth()==month && data.disease=='Phytphthora').length
+         this.series[0]['data'][2] = this.events.filter(data=>new Date(data.date).getMonth()==month  && data.disease=='Greening').length
+         this.series[0]['data'][3] = this.events.filter(data=>new Date(data.date).getMonth()==month  && data.disease=='Greasy Spot').length
+         this.series[0]['data'][4] = this.events.filter(data=>new Date(data.date).getMonth()==month  && data.disease=='Cranker').length
+         this.series[0]['data'][5] = this.events.filter(data=>new Date(data.date).getMonth()==month  && data.disease=='Citrus Scab').length
+         this.series[0]['data'][6] = this.events.filter(data=>new Date(data.date).getMonth()==month  && data.disease=='Alternaria Brown Spot').length
+    this.isGraph=true
+     this.$refs.realtimeChart.updateSeries([{
+        data: this.series[0].data,
+      }], false, true);
+    },
      getColorStatus(item) {
     if (item == "Pending") {
         return "background-color:#FFF5CC;border-radius:15px;padding:7px; width:150px; color: #344557;";
@@ -205,18 +264,18 @@ export default {
 
         })
         .then((res) => {
-          this.series[0]['data'][0] = res.data.filter(data=>new Date(data.date).getMonth()==0).length
-         this.series[0]['data'][1] = res.data.filter(data=>new Date(data.date).getMonth()==1).length
-         this.series[0]['data'][2] = res.data.filter(data=>new Date(data.date).getMonth()==2).length
-         this.series[0]['data'][3] = res.data.filter(data=>new Date(data.date).getMonth()==3).length
-         this.series[0]['data'][4] = res.data.filter(data=>new Date(data.date).getMonth()==4).length
-         this.series[0]['data'][5] = res.data.filter(data=>new Date(data.date).getMonth()==5).length
-         this.series[0]['data'][6] = res.data.filter(data=>new Date(data.date).getMonth()==6).length
-         this.series[0]['data'][7] = res.data.filter(data=>new Date(data.date).getMonth()==7).length
-         this.series[0]['data'][8] = res.data.filter(data=>new Date(data.date).getMonth()==8).length
-         this.series[0]['data'][9] = res.data.filter(data=>new Date(data.date).getMonth()==9).length
-         this.series[0]['data'][10] = res.data.filter(data=>new Date(data.date).getMonth()==10).length
-         this.series[0]['data'][11] = res.data.filter(data=>new Date(data.date).getMonth()==11).length
+          this.series[0]['data'][0] = res.data.filter(data=>new Date(data.date).getMonth()==5 && data.disease=='Sooty Mold').length
+         this.series[0]['data'][1] = res.data.filter(data=>new Date(data.date).getMonth()==5 && data.disease=='Phytphthora').length
+         this.series[0]['data'][2] = res.data.filter(data=>new Date(data.date).getMonth()==5  && data.disease=='Greening').length
+         this.series[0]['data'][3] = res.data.filter(data=>new Date(data.date).getMonth()==5  && data.disease=='Greasy Spot').length
+         this.series[0]['data'][4] = res.data.filter(data=>new Date(data.date).getMonth()==5  && data.disease=='Cranker').length
+         this.series[0]['data'][5] = res.data.filter(data=>new Date(data.date).getMonth()==5  && data.disease=='Citrus Scab').length
+         this.series[0]['data'][6] = res.data.filter(data=>new Date(data.date).getMonth()==5  && data.disease=='Alternaria Brown Spot').length
+        //  this.series[0]['data'][7] = res.data.filter(data=>new Date(data.date).getMonth()==5).length
+        //  this.series[0]['data'][8] = res.data.filter(data=>new Date(data.date).getMonth()==8).length
+        //  this.series[0]['data'][9] = res.data.filter(data=>new Date(data.date).getMonth()==9).length
+        //  this.series[0]['data'][10] = res.data.filter(data=>new Date(data.date).getMonth()==10).length
+        //  this.series[0]['data'][11] = res.data.filter(data=>new Date(data.date).getMonth()==11).length
          this.isGraph = true
          console.log(this.series)
           console.log(res.data);
